@@ -1,0 +1,106 @@
+abint insf(abint a, int v)
+{
+    if(appart(a,v))
+        return a;
+    if(a==NULL)
+        return enrac(NULL,NULL,v);
+    if (a->val<v)
+        a->fd=insf(a->fd,v);
+    else
+        a->fg=insf(a->fg,v);
+    return a;
+}
+
+abint insraux(abint a, int v)
+{
+    if(a==NULL)
+        return enrac(NULL,NULL,v);
+    int r =racine(a);
+    abint g=a->fg;
+    abint d=a->fd;
+    free(a);
+    if(v < r)
+    {
+        abint b=insraux(g,v);
+        a=enrac(b->fg,enrac(b->fd,d,r),v);
+        free(b);
+        return a;
+    }
+    else
+    {
+        abint b=insraux(d,v);
+        a=enrac(enrac(g,b->fg,r),b->fd,v);
+        free(b);
+        return a;
+    }
+}
+
+
+abint insr(abint a,int v)
+{
+    if(appart(a,v))
+        return a;
+    a=insraux(a,v);
+    return a;
+}
+
+abint maxoter(abint a, int *r)
+{
+    if(a==NULL)
+        return a;
+    if(a->fd==NULL)
+    {
+        *r=racine(a);
+        abint b=a->fg;
+        free(a);
+        return b;
+    }
+    else
+    {
+        a->fd=maxoter(a->fd,r);
+        return a;
+    }
+}
+
+abint supeaux(abint a, int v)
+{
+    if(vide(a))
+        return a;
+    int r=racine(a);
+    abint g=a->fg;
+    abint d=a->fd;
+    free(a);
+    if(r==v)
+    {
+        if(g==NULL)
+            return d;
+        if(d==NULL)
+            return g;
+        g=maxoter(g,&r);
+        a=enrac(g,d,r);
+        return a;
+    }
+    if(v<r)
+        return enrac(supeaux(g,v),d,r);
+    return enrac(g,supeaux(d,v),r);
+}
+
+abint supe(abint a, int v)
+{
+    if(!appart(a,v))
+        return a;
+    a=supeaux(a,v);
+    return a;
+}
+
+abint rd(abint a)
+{
+    if(a==NULL)
+        return a;
+    abint d=a;
+    abint r=a->fg;
+    abint dg=r->fd;
+    r->fd=d;
+    d->fg=dg;
+    return r;
+}
